@@ -1,18 +1,24 @@
+import static org.junit.Assert.assertEquals;
+
 import com.olysyi.rpn.Calculator;
 import com.olysyi.rpn.CalculatorException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.rules.ExpectedException;
 
 public class CalculatorTest {
 
     private Calculator calculator;
 
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
+
     @Before
     public void setUp() {
         calculator = new Calculator();
     }
+
 
     @Test
     public void givenTwoNumbersThenPushInStack() throws CalculatorException {
@@ -76,43 +82,52 @@ public class CalculatorTest {
     }
 
     @Test
-    public void testInsuficientParameters() {
-        try {
-            calculator.eval("1 2 3 * 5 + * * 6 5");
-        } catch (CalculatorException e) {
-            assertEquals("operator * (position: 8): insufficient parameters", e.getMessage());
-        }
+    public void shouldThrowExcepttonWhenInsuficientParameters() throws CalculatorException{
+
+        expected.expect(CalculatorException.class);
+        expected.expectMessage("operator * (position: 8): insufficient parameters");
+        calculator.eval("1 2 3 * 5 + * * 6 5");
         assertEquals(1, getSize());
         assertEquals(11, getTop(), 0);
     }
 
-    @Test(expected = CalculatorException.class)
+    @Test
     public void testOnlyOperators() throws CalculatorException {
+        expected.expect(CalculatorException.class);
+        expected.expectMessage("empty stack");
         calculator.eval("+ +");
     }
 
-    @Test(expected = CalculatorException.class)
+    @Test
     public void testInvalidCharacters() throws CalculatorException {
+        expected.expect(CalculatorException.class);
+        expected.expectMessage("invalid operator");
         calculator.eval("2 a +");
     }
 
-    @Test(expected = CalculatorException.class)
+    @Test
     public void testNoSpaces() throws CalculatorException {
+        expected.expect(CalculatorException.class);
+        expected.expectMessage("empty stack");
         calculator.eval("22+");
     }
 
-    @Test(expected = CalculatorException.class)
+    @Test
     public void testNoSpaces2() throws CalculatorException {
+        expected.expect(CalculatorException.class);
         calculator.eval("2 2+ 3");
     }
 
-    @Test(expected = CalculatorException.class)
+    @Test
     public void testDivideByZero() throws CalculatorException {
+        expected.expect(CalculatorException.class);
+        expected.expectMessage("Cannot divide by 0.");
         calculator.eval("1 0 /");
     }
 
-    @Test(expected = CalculatorException.class)
+    @Test
     public void testNullInput() throws CalculatorException {
+        expected.expect(CalculatorException.class);
         calculator.eval(null);
     }
 
